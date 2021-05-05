@@ -10,6 +10,9 @@ public class EventPlane : MonoBehaviour
     private GameObject _child;
     public PlayableDirector director;
 
+    // Fungus
+    public Fungus.Flowchart flowchart = null;
+
     // Collision Param
     public int collisionedEventCount = 0;
     private bool isCollisioned = false;
@@ -40,6 +43,9 @@ public class EventPlane : MonoBehaviour
                 this.isCollisioned = true;
                 this.collisionedEventCount += 1;
             }
+            // else {
+            //     smallCubeDirector.StartFungus("black_box_talk_from_second");
+            // }
         }
     }
 
