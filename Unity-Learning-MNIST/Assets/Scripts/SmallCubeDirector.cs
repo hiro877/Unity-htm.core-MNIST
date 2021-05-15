@@ -18,14 +18,21 @@ public class SmallCubeDirector : MonoBehaviour
     // MNIST Image
     private const int IMG_WIDTH = 28;
     private const int IMG_HEIGHT = 28;
+    private List<List<byte>> test_images;
+    private string test_images_path  = "test_images";
+
+    // Generate Objects
+    public GameObject questionBoard;
 
 	void Awake() {
         csvReaderPlane = GameObject.FindGameObjectWithTag("csvReaderPlane");
+        questionBoard = GameObject.CreatePrimitive(PrimitiveType.Plane);
 	}
 
     void Start()
     {
         csvReaderPlaneImages = read_mnist_images(csvReaderPlane_imeges_path);
+        test_images  = read_mnist_images(test_images_path);
         
     }
 
@@ -108,6 +115,51 @@ public class SmallCubeDirector : MonoBehaviour
         }
         attach_texture.Apply();
         target.GetComponent<MeshRenderer>().material.mainTexture = attach_texture;
+    }
+
+    public void GenerateQuestionBoard(){
+
+        // 位置調整を行う
+        questionBoard.transform.position = new Vector3(2.3f, 1.5f, -30.0f);
+
+        questionBoard.transform.Rotate(new Vector3(90, 0, 0));
+
+        // フワッと徐々にオブジェクトを出現させる
+        int test_num = Random.Range(2000,3000);
+        List<byte> img = test_images[test_num];
+        List<List<byte>> img_byte2D = convert_data(img, true);
+        AttachImage(questionBoard, img_byte2D, IMG_WIDTH, IMG_HEIGHT);
+        StartCoroutine(AppearGradually(questionBoard));
+    }
+
+    IEnumerator AppearGradually(GameObject target)
+    {   
+        // 繰り返し回数
+        int loopcount = 10;
+
+        // 更新間隔
+        float waitsecond = 0.05f;
+
+        // スケール設定
+        // オフセット値
+        float offsetScale = 0.15f / loopcount;
+        // 更新値
+        float updateScale = 0;
+
+        // オブジェクトの有効化（初期位置）
+        target.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+
+        for (int loop = 0; loop < loopcount; loop++)
+        {
+            // スケール更新
+            updateScale = updateScale + offsetScale;
+            target.transform.localScale = new Vector3(updateScale, updateScale, updateScale);
+            yield return new WaitForSeconds(waitsecond);
+        }
+        // 最終スケール
+        target.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+
+        yield return new WaitForSeconds(3f);
     }
 
 }
